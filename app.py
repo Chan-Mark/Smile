@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session
 import sqlite3
 from sqlite3 import Error
 
-DB_NAME = "smile_db"
+DB_NAME = "smile.db"
 
 app = Flask(__name__)
 
@@ -18,6 +18,7 @@ def create_connection(db_file):
 
     return None
 
+
 @app.route('/')
 def render_homepage():
     return render_template("home.html")
@@ -25,19 +26,18 @@ def render_homepage():
 
 @app.route('/menu')
 def render_menu_page():
-
     # connect to the database
     con = create_connection(DB_NAME)
 
     # SELECT the things you want from your table(s)
     query = "SELECT name, description, volume, price, image FROM product"
 
-    cur = con.cursor() # You need this line next
-    cur.execute(query) # This line actually executes the query
-    product_list = cur.fetchall() # Puts the results into a list usable in python
+    cur = con.cursor()  # You need this line next
+    cur.execute(query)  # This line actually executes the query
+    product_list = cur.fetchall()  # Puts the results into a list usable in python
     con.close()
 
-    return render_template("menu.html", products = product_list)
+    return render_template("menu.html", products=product_list)
 
 
 @app.route('/contact')
