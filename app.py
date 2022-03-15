@@ -45,4 +45,9 @@ def render_contact():
     return render_template("contact.html")
 
 
+@app.route('/login')
+def render_login_page():
+    return render_template("login.html")
+
+
 app.run(host="0.0.0.0")
