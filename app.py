@@ -23,7 +23,7 @@ def create_connection(db_file):
 
 @app.route('/')
 def render_homepage():
-    return render_template("home.html")
+    return render_template("home.html", logged_in=is_logged_in())
 
 
 @app.route('/menu')
@@ -39,12 +39,12 @@ def render_menu_page():
     product_list = cur.fetchall()  # Puts the results into a list usable in python
     con.close()
 
-    return render_template("menu.html", products=product_list)
+    return render_template("menu.html", products=product_list, logged_in=is_logged_in())
 
 
 @app.route('/contact')
 def render_contact():
-    return render_template("contact.html")
+    return render_template("contact.html", logged_in=is_logged_in())
 
 
 # Login video plan:
@@ -55,6 +55,9 @@ def render_contact():
 
 @app.route('/login', methods=["GET", "POST"])
 def render_login_page():
+    if is_logged_in():
+        return redirect('/')
+
     if request.method == "POST":
         email = request.form['email'].strip().lower()
         password = request.form['password'].strip()
@@ -106,11 +109,12 @@ def render_signup_page():
 
         con = create_connection(DB_NAME)
 
-        query = "INSERT INTO customer(id, fname, lname, email, password) VALUES(NULL,?,?,?,?)"
+        query = "INSERT INTO customer(id, fname, lname, email, password) " \
+                "VALUES(NULL,?,?,?,?)"
 
         cur = con.cursor()  # You need this line next
         try:
-            cur.execute(query,(fname, lname, email, password))  # This line actually executes the query
+            cur.execute(query, (fname, lname, email, password))  # This line actually executes the query
         except sqlite3.IntegrityError:
             return redirect('/signup?error=Email+is+already+used')
 
@@ -118,13 +122,35 @@ def render_signup_page():
         con.close()
         return redirect('/login')
 
-    return render_template('signup.html')
+    return render_template('signup.html', logged_in=is_logged_in())
 
 
 @app.route('/logout')
 def logout():
     print(list(session.keys()))
     [session.pop(key) for key in list(session.keys())]
+    print(list(session.keys()))
+    return redirect(request.referrer + '?message=See+you+next+time!')
 
 
-app.run(host="0.0.0.0")
+def is_logged_in():
+    if session.get("email") is None:
+        print("not logged in")
+        return False
+    else:
+        print("logged in")
+        return True
+
+
+    #     username = session.get("USERNAME")
+    #     user = users[username]
+    #     return render_template("public/profile.html", user=user)
+    # else:
+    #     print("No username found in session")
+    #     return redirect(url_for("sign in"))
+    #
+    #
+    # try:
+
+
+app.run(host="0.0.0.0", debug=True)
