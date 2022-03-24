@@ -11,15 +11,8 @@
 </head>
 
 <body>
-<div class="container">
-    <header>
-        <h1>smile</h1>
-        <h2>{% block pageheading %}{% endblock %}</h2>
-    </header>
     <nav>
-        <a href="/">home</a> &#8226;
-        <a href="/menu">menu</a> &#8226;
-        <a href="/contact">contact</a> &#8226;
+        <a href="/">home</a><a href="/menu">menu</a><a href="/contact">contact</a>
         {% if logged_in %}
         <a href="/logout">log out</a>
         {% else %}
@@ -27,6 +20,12 @@
         {% endif %}
 
     </nav>
+<div class="container">
+    <header>
+        <h1>smile</h1>
+        <h2>{% block pageheading %}{% endblock %}</h2>
+    </header>
+
     <main>
         {% if logged_in %}
         <strong>Hello, {{ session.firstname }}</strong>
