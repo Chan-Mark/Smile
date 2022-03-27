@@ -16,7 +16,7 @@ def create_connection(db_file):
     """create a connection to the sqlite db"""
     try:
         connection = sqlite3.connect(db_file)
-        # intialise_tables(connection)
+        connection.execute('pragma foreign_keys=ON')
         return connection
     except Error as e:
         print(e)
@@ -142,16 +142,31 @@ def is_logged_in():
 
 @app.route('/addtocart/<productid>')
 def addtocart(productid):
+    try:
+        productid=int(productid)
+    except ValueError:
+        print("{} is not an integer".format(productid))
+        return redirect("/menu?error=Invalid+product+id")
+
     userid = session['userid']
     timestamp = datetime.now()
     print("User {} would you like to add {} to cart at {}".format(userid, productid, timestamp))
-    query = "INSERT INTO cart(id, userid, productid, timestamp) VALUES (NULL,?,?,?,?)"
+    query = "INSERT INTO cart(id, userid, productid, timestamp) VALUES (NULL,?,?,?)"
     con = create_connection(DB_NAME)
     cur = con.cursor()
-    cur.execute(query, (userid, productid, timestamp))
+
+    # try to INSERT - this will fail if there is a foriegn key issue
+    try:
+        cur.execute(query, (userid, productid, timestamp))
+    except sqlite3.IntegrityError as e:
+        print(e)
+        print("### PROBLEM INSERTING INTO THE DATABASE - FOREIGN KEY ###")
+        con.close()
+        return redirect('/menu?error=Something+went+very+very+wrong')
+
     con.commit()
     con.close()
-    return redirect(request.referrer)
+    return redirect('/menu')
 
 
 app.run(host="0.0.0.0", debug=True)
