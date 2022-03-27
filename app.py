@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, session, redirect
 import sqlite3
 from sqlite3 import Error
 from flask_bcrypt import Bcrypt
+from datetime import datetime
 
 #DB_NAME = "C:/Users/18285/PycharmProjects/smilev2/smile.db"
 DB_NAME = "smile.db"
@@ -139,15 +140,18 @@ def is_logged_in():
         return True
 
 
-    #     username = session.get("USERNAME")
-    #     user = users[username]
-    #     return render_template("public/profile.html", user=user)
-    # else:
-    #     print("No username found in session")
-    #     return redirect(url_for("sign in"))
-    #
-    #
-    # try:
+@app.route('/addtocart/<productid>')
+def addtocart(productid):
+    userid = session['userid']
+    timestamp = datetime.now()
+    print("User {} would you like to add {} to cart at {}".format(userid, productid, timestamp))
+    query = "INSERT INTO cart(id, userid, productid, timestamp) VALUES (NULL,?,?,?,?)"
+    con = create_connection(DB_NAME)
+    cur = con.cursor()
+    cur.execute(query, (userid, productid, timestamp))
+    con.commit()
+    con.close()
+    return redirect(request.referrer)
 
 
 app.run(host="0.0.0.0", debug=True)
