@@ -4,7 +4,7 @@ from sqlite3 import Error
 from flask_bcrypt import Bcrypt
 from datetime import datetime
 
-#DB_NAME = "C:/Users/18285/PycharmProjects/smilev2/smile.db"
+# DB_NAME = "C:/Users/18285/PycharmProjects/smilev2/smile.db"
 DB_NAME = "smile.db"
 
 app = Flask(__name__)
@@ -107,8 +107,7 @@ def render_signup_page():
         hashed_password = bcrypt.generate_password_hash(password)
         con = create_connection(DB_NAME)
 
-        query = "INSERT INTO customer(id, fname, lname, email, password) " \
-                "VALUES(NULL,?,?,?,?)"
+        query = "INSERT INTO customer(id, fname, lname, email, password) VALUES (NULL,?,?,?,?)"
 
         cur = con.cursor()  # You need this line next
         try:
@@ -143,7 +142,7 @@ def is_logged_in():
 @app.route('/addtocart/<productid>')
 def addtocart(productid):
     try:
-        productid=int(productid)
+        productid = int(productid)
     except ValueError:
         print("{} is not an integer".format(productid))
         return redirect("/menu?error=Invalid+product+id")
@@ -155,7 +154,7 @@ def addtocart(productid):
     con = create_connection(DB_NAME)
     cur = con.cursor()
 
-    # try to INSERT - this will fail if there is a foriegn key issue
+    # try to INSERT - this will fail if there is a foreign key issue
     try:
         cur.execute(query, (userid, productid, timestamp))
     except sqlite3.IntegrityError as e:
