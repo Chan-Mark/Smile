@@ -90,6 +90,9 @@ def render_login_page():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def render_signup_page():
+    if is_logged_in():
+        return redirect('/')
+
     if request.method == 'POST':
         print(request.form)
         fname = request.form.get('fname').strip().title()
@@ -105,6 +108,7 @@ def render_signup_page():
             return redirect('/signup?error=Password+must+be+8+characters+or+more')
 
         hashed_password = bcrypt.generate_password_hash(password)
+
         con = create_connection(DB_NAME)
 
         query = "INSERT INTO customer(id, fname, lname, email, password) VALUES (NULL,?,?,?,?)"
