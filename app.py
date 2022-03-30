@@ -172,4 +172,41 @@ def addtocart(productid):
     return redirect('/menu')
 
 
+@app.route('/cart')
+def render_cart():
+    userid = session['userid']
+    query = "SELECT productid FROM cart WHERE userid=?;"
+    con = create_connection(DB_NAME)
+    cur = con.cursor()
+    cur.execute(query, (userid, ))
+    product_ids = cur.fetchall()
+    print(product_ids)   # U - G - L - Y
+
+    # the results from the query are a list of sets, loop through and pull out the ids
+    for i in range(len(product_ids)):
+        product_ids[i] = product_ids[i][0]
+    print(product_ids)
+
+    unique_product_ids = list(set(product_ids))
+    print(unique_product_ids)
+
+    for i in range(len(unique_product_ids)):
+        product_count = product_ids.count(unique_product_ids[i])
+        unique_product_ids[i] = [unique_product_ids[i], product_count]
+    print(unique_product_ids)
+
+    query = """SELECT name, price FROM product WHERE id=?;"""
+    for item in unique_product_ids:
+        cur.execute(query, (item[0]))    # item[0] os the productid
+        item_details = cur.fetchall()    # this transforms the result into a python list
+        print(item_details)              # this will print something like [('Latte', 4)]
+        item.append(item_details[0][0])  # add the product name to the list
+        item.append(item_details[0][1])  # add the price to the list
+
+    con.close()
+    print(unique_product_ids)  # check out the output now - then you will see what has happened!
+
+    return render_template('cart.html', cart_data=unique_product_ids, logged_in=is_logged_in())
+
+
 app.run(host="0.0.0.0", debug=True)

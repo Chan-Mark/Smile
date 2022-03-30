@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block pageheading %}
+cart
+{% endblock %}
+
+{% block main %}
+<table class="cart-table">
+    <thead>
+    <tr>
+        <td>Name</td>
+        <td>Quantity</td>
+        <td>Price</td>
+        <td>Item total</td>
+        <td>Remove one</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in cart_data %}
+    <tr>
+
+    </tr>
+    </tbody>
+
+</table>
+{% endblock %}
