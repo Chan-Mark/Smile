@@ -82,15 +82,12 @@ def render_menu_page():
     con = create_connection(DB_NAME)
 
     # SELECT the things you want from your table(s)
-    query = "SELECT name, description, volume, price, image FROM product"
+    query = "SELECT id, name, description, volume, price, image FROM product"
 
     cur = con.cursor()  # You need this line next
     cur.execute(query)  # This line actually executes the query
     product_list = cur.fetchall()  # Puts the results into a list usable in python
     con.close()
-
-    if not is_logged_in():
-        return redirect('/')
 
     return render_template("menu.html", products=product_list, logged_in=is_logged_in())
 
@@ -232,9 +229,6 @@ def render_cart():
     product_ids = cur.fetchall()
     print(product_ids)   # U - G - L - Y
 
-    if len(product_ids) == 0:
-        return redirect('/menu?error=Cart+empty')
-
     # the results from the query are a list of sets, loop through and pull out the ids
     for i in range(len(product_ids)):
         product_ids[i] = product_ids[i][0]
@@ -250,7 +244,7 @@ def render_cart():
 
     query = """SELECT name, price FROM product WHERE id=?;"""
     for item in unique_product_ids:
-        cur.execute(query, (item[0]))    # item[0] os the productid
+        cur.execute(query, (item[0], ))    # item[0] os the productid
         item_details = cur.fetchall()    # this transforms the result into a python list
         print(item_details)              # this will print something like [('Latte', 4)]
         item.append(item_details[0][0])  # add the product name to the list
@@ -265,14 +259,14 @@ def render_cart():
 @app.route('/removeonefromcart/<product_id>')
 def render_remove_page(product_id):
     print("Remove item {}".format(product_id))
-    customer_id = session['customerid']
-    query = "DELETE FROM cart WHERE id=(SELECT MIN(id) FROM cart WHERE productid=? and customerid=?);"
+    customer_id = session['userid']
+    query = "DELETE FROM cart WHERE id=(SELECT MIN(id) FROM cart WHERE productid=? and userid=?);"
     con = create_connection(DB_NAME)
     cur = con.cursor()
     cur.execute(query, (product_id, customer_id))
     con.commit()
     con.close()
-    return redirect('cart')
+    return redirect('/cart')
 
 
 @app.route('/confirmorder')

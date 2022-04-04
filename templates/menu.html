@@ -9,13 +9,13 @@ menu
 <div class="products">
 {% for product in products %}
     <div class="product-box">
-        <h3>{{ product[0] }}</h3>
-        <p>{{ product[1] }} </p>
-        <p><strong>Volume: </strong>{{ product[2] }}</p>
-        <p><strong>Price: </strong>{{ product[3] }}</p>
-        <img src="static/images/{{ product[4] }}.jpg">
+        <h3>{{ product[1] }}</h3>
+        <p>{{ product[2] }} </p>
+        <p><strong>Volume: </strong>{{ product[3] }}</p>
+        <p><strong>Price: </strong>{{ product[4] }}</p>
+        <img src="static/images/{{ product[5] }}.jpg">
         {% if logged_in %}
-        <a href="/addtocart/{{ products[5] }}">Add to cart &raquo;</a>
+        <a href="/addtocart/{{ product[0] }}">Add to cart &raquo;</a>
         {% endif %}
         <a href="http://google.com">google</a>
     </div>
